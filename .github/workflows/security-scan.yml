@@ -1,0 +1,63 @@
+name: Security Scan & GitHub Issue Automation
+
+on:
+  push:
+    branches:
+      - main
+  # schedule:
+  #   - cron: "0 0 * * *"  # Runs daily at midnight
+  workflow_dispatch:  # Allows manual trigger
+
+jobs:
+  security_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Read URLs from file
+        id: read_urls
+        run: echo "URLS=$(cat urls.txt | tr '\n' ' ')" >> $GITHUB_ENV
+
+      - name: Run ZAP Baseline Scan
+        run: |
+          for url in $URLS; do
+            docker run --rm -v $(pwd):/zap/wrk -t owasp/zap2docker-stable zap-baseline.py -t $url -J zap_baseline_report_$url.json
+          done
+
+      - name: Run ZAP Full Scan
+        run: |
+          for url in $URLS; do
+            docker run --rm -v $(pwd):/zap/wrk -t owasp/zap2docker-stable zap-full-scan.py -t $url -J zap_full_report_$url.json
+          done
+
+      - name: Upload Reports as Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: zap-reports
+          path: "*.json"
+
+  analyze_reports:
+    needs: security_scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Download Reports
+        uses: actions/download-artifact@v3
+        with:
+          name: zap-reports
+
+      - name: Install Python Dependencies
+        run: pip install openai requests fuzzywuzzy pandas
+
+      - name: Run AI-powered Analysis and Issue Creation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          GITHUB_BRANCH: ${{ github.ref_name }}
+        run: python analyze_and_create_issues.py
+
