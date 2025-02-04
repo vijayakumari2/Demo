@@ -20,9 +20,13 @@ jobs:
       - name: Pull ZAP Docker Image
         run: docker pull zaproxy/zap-stable
 
+      - name: Set proper permissions
+        run: chmod -R 777 $(pwd)
+
       - name: Run ZAP Baseline Scan
         run: |
           for url in $URLS; do
+            sanitized_url=$(echo $url | sed 's/https\?:\/\///' | sed 's/\//_/g') 
             docker run --rm -v $(pwd):/zap/wrk -t zaproxy/zap-stable zap-baseline.py -t $url -J zap_baseline_report_$url.json
           done
 
