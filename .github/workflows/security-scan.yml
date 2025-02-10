@@ -61,7 +61,7 @@ jobs:
           path: ./zap_reports  
 
       - name: List Downloaded Reports
-        run: ls -lah
+        run: ls -lah zap_reports
         
       - name: Install Python Dependencies
         run: pip install openai requests fuzzywuzzy pandas
