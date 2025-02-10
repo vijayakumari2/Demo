@@ -114,17 +114,26 @@ def create_or_update_issue(vuln):
 
 def main():
     """Main execution function to scan files and create GitHub issues."""
-    report_files = [f for f in os.listdir() if f.startswith("zap_") and f.endswith(".json")]
+    report_directory = "zap_reports"
+    # report_files = [f for f in os.listdir() if f.startswith("zap_") and f.endswith(".json")]
+    report_files = [f for f in os.listdir(report_directory) if f.startswith("zap_") and f.endswith(".json")]
+
     
     if not report_files:
         print("🚫 No ZAP JSON reports found.")
         return
     
     for report in report_files:
-        print(f"🔍 Processing {report}...")
-        vulnerabilities = extract_vulnerabilities(report)
+        report_path = os.path.join(report_directory, report)
+        print(f"🔍 Processing {report_path}...")
+        vulnerabilities = extract_vulnerabilities(report_path)
         for vuln in vulnerabilities:
             create_or_update_issue(vuln)
+
+        # print(f"🔍 Processing {report}...")
+        # vulnerabilities = extract_vulnerabilities(report)
+        # for vuln in vulnerabilities:
+        #     create_or_update_issue(vuln)
 
 if __name__ == "__main__":
     main()
