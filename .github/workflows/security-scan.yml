@@ -33,7 +33,7 @@ jobs:
       - name: Run ZAP Full Scan
         run: |
           for url in $URLS; do
-            sanitized_url=$(echo "$url" | sed 's|https\?://||g' | sed 's|/|_|g' | sed 's|:|_|g' | sed 's|\.|_|g')
+            sanitized_url=$(echo "$url" | sed -E 's|https?://||g; s|[^a-zA-Z0-9]|_|g')
             docker run --rm -v $(pwd):/zap/wrk -t zaproxy/zap-stable zap-full-scan.py -t $url -J zap_full_report_$url.json
           done
 
