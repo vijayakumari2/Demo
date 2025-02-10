@@ -9,8 +9,8 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # GitHub Repo Details
-OWNER = "your-github-org"
-REPO = "your-repo-name"
+OWNER = "vijayakumari2"
+REPO = "Demo"
 HEADERS = {"Authorization": f"token {GITHUB_TOKEN}", "Accept": "application/vnd.github.v3+json"}
 
 # GitHub Actions Metadata
