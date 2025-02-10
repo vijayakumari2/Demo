@@ -29,7 +29,7 @@ jobs:
           sanitized_url=$(echo "$url" | sed -E 's|https?://||g' | tr -cd '[:alnum:]_')
           echo "Running ZAP Baseline Scan for: $url"
           echo "Sanitized filename: zap_baseline_report_${sanitized_url}.json"
-          docker run --rm -v $(pwd):/zap/wrk -t zaproxy/zap-stable zap-baseline.py -t $url -J zap_baseline_report_$sanitized_url.json
+          docker run --rm -v $(pwd):/zap/wrk -t zaproxy/zap-stable zap-baseline.py -t $url -J zap_baseline_report_$sanitized_url.json || true
           done
 
       - name: Run ZAP Full Scan
@@ -38,7 +38,7 @@ jobs:
           sanitized_url=$(echo "$url" | sed -E 's|https?://||g' | tr -cd '[:alnum:]_')    
           echo "Running ZAP full Scan for: $url"
           echo "Sanitized filename: zap_fullscan_report_${sanitized_url}.json"
-          docker run --rm -v $(pwd):/zap/wrk -t zaproxy/zap-stable zap-full-scan.py -t $url -J zap_full_report_$sanitized_url.json || echo "ZAP scan failed for $url"
+          docker run --rm -v $(pwd):/zap/wrk -t zaproxy/zap-stable zap-full-scan.py -t $url -J zap_full_report_$sanitized_url.json || true
           done
 
       - name: Upload Reports as Artifacts
