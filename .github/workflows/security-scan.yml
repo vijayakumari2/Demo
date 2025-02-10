@@ -58,7 +58,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: zap-reports
+          path: ./zap_reports  
 
+      - name: List Downloaded Reports
+        run: ls -lah
+        
       - name: Install Python Dependencies
         run: pip install openai requests fuzzywuzzy pandas
 
