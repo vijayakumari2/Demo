@@ -1,3 +1,1 @@
-https://appnetwise.com
-https://testsite.com
-https://vulnerableapp.com
+https://app.qa.az.memcrypt.io
